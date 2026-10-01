@@ -1,0 +1,60 @@
+{
+  "pipeline_id": "embeddingfactory",
+  "version_tag": "v1",
+  "seed": 20260930,
+  "corpus": {
+    "documents": "data/corpus/documents.jsonl",
+    "queries": "data/corpus/queries.jsonl",
+    "name": "embeddingfactory-demo"
+  },
+  "representation": {
+    "chunkings": ["sentence", "fixed"],
+    "chunking_params": {
+      "sentence": { "max_chars": 50 },
+      "fixed": { "size": 40, "overlap": 0 }
+    },
+    "embeddings": ["tfidf", "bm25", "hashing"],
+    "embedding_params": {
+      "tfidf": { "dim": 512, "min_df": 1 },
+      "bm25": { "dim": 512, "k1": 1.2, "b": 0.75 },
+      "hashing": { "dim": 512, "ngram": 3 }
+    }
+  },
+  "retrieval": {
+    "indexes": ["flat", "ivf", "hnsw"],
+    "distances": ["cos", "l2"],
+    "search_params": {
+      "flat": [{}],
+      "ivf": [{ "nprobe": 1 }, { "nprobe": 3 }],
+      "hnsw": [{ "ef_search": 16 }, { "ef_search": 64 }]
+    },
+    "index_params": {
+      "flat": {},
+      "ivf": { "nlist": 6, "kmeans_iters": 12 },
+      "hnsw": { "M": 6, "ef_construction": 24 }
+    },
+    "k": 5,
+    "fetch_factor": 2,
+    "sample_queries": 6
+  },
+  "ablation": {
+    "reference": "tfidf-sentence-flat-cos",
+    "reach_thresholds": [0.8, 0.9, 0.95, 1.0]
+  },
+  "pareto": {
+    "objectives": ["n_distance_computations", "recall_at_k"],
+    "extra_objectives": [
+      ["query_latency_ms", "recall_at_k"],
+      ["index_bytes", "recall_at_k"],
+      ["build_seconds", "recall_at_k"]
+    ]
+  },
+  "select": {
+    "rule": "max_recall_within_budget",
+    "budget_metric": "n_distance_computations",
+    "budget": 40.0
+  },
+  "metrics": {
+    "latency_repeats": 3
+  }
+}

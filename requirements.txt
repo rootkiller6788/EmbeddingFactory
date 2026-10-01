@@ -1,0 +1,8 @@
+# 核心链路零第三方依赖：只跑 main.py 不需要装任何东西。
+#
+# 唯一需要装的场景是跑测试：
+#   pip install pytest
+#
+# 可选扩展（把三个手写索引换成工业实现做对照）：
+#   pip install "faiss-cpu>=1.7"
+pytest>=7.4

@@ -1,0 +1,24 @@
+{"query_id": "q01", "text": "子词切分算法之间有什么区别", "relevant": ["d01", "d02", "d03"]}
+{"query_id": "q02", "text": "怎么把一句话变成一个向量", "relevant": ["d04", "d05"]}
+{"query_id": "q03", "text": "词袋模型为什么匹配不上换个说法的查询", "relevant": ["d04"]}
+{"query_id": "q04", "text": "双塔模型的负样本从哪里来", "relevant": ["d06"]}
+{"query_id": "q05", "text": "近邻图索引的搜索宽度参数怎么影响召回率", "relevant": ["d07"]}
+{"query_id": "q06", "text": "倒排索引分多少个簇比较合适", "relevant": ["d08"]}
+{"query_id": "q07", "text": "向量太占内存了怎么压小", "relevant": ["d09"]}
+{"query_id": "q08", "text": "把大模型压到四比特用什么方法", "relevant": ["d11"]}
+{"query_id": "q09", "text": "量化之后精度掉了怎么办", "relevant": ["d10", "d12"]}
+{"query_id": "q10", "text": "怎么把大模型的本事教给小模型", "relevant": ["d13", "d14", "d15"]}
+{"query_id": "q11", "text": "温度系数调高会有什么影响", "relevant": ["d14"]}
+{"query_id": "q12", "text": "检索效果用什么指标衡量", "relevant": ["d16", "d17"]}
+{"query_id": "q13", "text": "训练数据里混进了测试集怎么办", "relevant": ["d18"]}
+{"query_id": "q14", "text": "语料里的重复内容和低质量文本怎么处理", "relevant": ["d19", "d20"]}
+{"query_id": "q15", "text": "怎么让模型输出符合人的偏好", "relevant": ["d22", "d24"]}
+{"query_id": "q16", "text": "奖励模型怎么训练和评估", "relevant": ["d23"]}
+{"query_id": "q17", "text": "推理服务吞吐上不去怎么优化", "relevant": ["d25"]}
+{"query_id": "q18", "text": "显存不够用有哪些办法", "relevant": ["d26", "d27"]}
+{"query_id": "q19", "text": "文档切块怎么切才不影响检索", "relevant": ["d28", "d29", "d30"]}
+{"query_id": "q20", "text": "为什么要多加一个重排阶段", "relevant": ["d31", "d32"]}
+{"query_id": "q21", "text": "重排太慢了怎么控制延迟", "relevant": ["d33"]}
+{"query_id": "q22", "text": "文字和图片怎么对齐到同一个空间", "relevant": ["d34", "d35"]}
+{"query_id": "q23", "text": "视频怎么做检索", "relevant": ["d36"]}
+{"query_id": "q24", "text": "训练语料里的手机号邮箱怎么脱敏", "relevant": ["d21"]}

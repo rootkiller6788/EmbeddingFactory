@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "embeddingfactory"
+version = "0.1.0"
+description = "EmbeddingFactory — 把「表示空间」与「检索空间」解耦，输出消融矩阵与 Latency–Recall 前沿"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+# 核心链路零第三方依赖：落地约束「4060 8G 单机可跑」
+#
+# 这一条在本项目里代价很明确：**三个索引结构都是手写的**。
+# 手写不是为了炫技，而是因为本项目要回答的是「同一批向量下，索引/距离/搜索参数
+# 各自贡献了多少」—— 黑盒 ANN 库只给一个 latency 数字，给不出「为什么」。
+# 更关键的是：手写才能**精确统计「距离计算次数」**，而那正是本项目用来
+# 替代不可复现的实测延迟的**确定性成本模型**（见 metrics.py 模块文档）。
+# 生产环境当然该用 FAISS / hnswlib（快得多），因此留了 faiss extra。
+dependencies = []
+
+[project.optional-dependencies]
+# 可选扩展：接 FAISS 做「手写实现 vs 工业实现」的一致性对照
+faiss = ["faiss-cpu>=1.7"]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+embeddingfactory = "embeddingfactory.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
