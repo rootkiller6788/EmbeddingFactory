@@ -7,7 +7,7 @@
 | --- | --- | --- |
 | DatasetFactory | 数据流过哪些 stage | 上游产物 → 下游产物 |
 | SyntheticFactory | 进化链（基因组如何被迭代） | 上一轮 evolve → 下一轮 generate |
-| DataMixture | 搜索谱系（配方如何被提出） | 父试验 → 子试验 |
+| DataMixtureFactory | 搜索谱系（配方如何被提出） | 父试验 → 子试验 |
 | TokenizerFactory | 设计空间的展开与收敛 | 语料 → 规则 → 每个 spec 的训练 → 评测 → 入选 |
 | **EmbeddingFactory** | **两个空间的展开与收敛** | **文档 → 分块 → 嵌入 → 建索引 → 评测 → 入选** |
 
