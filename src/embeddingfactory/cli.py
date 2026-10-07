@@ -466,6 +466,31 @@ def _cmd_query(args: argparse.Namespace) -> int:
 
 
 # ----------------------------------------------------------------------
+#: 项目根：`src/{pkg}/cli.py` → 上三级。**所有相对路径默认值都锚到这里。**
+_PKG_ROOT = Path(__file__).resolve().parent.parent.parent
+
+
+def _anchor_args(args: argparse.Namespace) -> None:
+    """把 `--config` / `--out` / `--root` 的**相对路径**锚定到项目根。
+
+    契约是 `cd <项目目录> && python main.py ...`，从项目目录里跑时锚不锚一个样
+    —— 缺陷因此**长期隐形**。一旦从别处调用（例如跨项目的批量核对
+    `python L5-xxx/main.py check`），`"configs/default.json"` 就指向了 cwd 下一个
+    不存在的位置：严格 `load_config` 直接崩，宽松的会**静默回退 DEFAULTS**
+    （更糟 —— 不报错，只是悄悄换了一套口径）。
+
+    **在 `main()` 里紧跟 `parse_args` 锚一次**，比在每个调用点各锚一次可靠：
+    漏掉一个调用点，就是一条只在某种调用方式下才现形的路径。
+
+    绝对路径原样使用。语义与 `pytest` 的 rootdir / `cargo` / `npm --prefix` 一致。
+    """
+    for name in ("config", "out", "root"):
+        value = getattr(args, name, None)
+        if isinstance(value, str) and value:
+            p = Path(value)
+            if not p.is_absolute():
+                setattr(args, name, str(_PKG_ROOT / p))
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="embeddingfactory",
@@ -478,17 +503,17 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_run = sub.add_parser("run", help="跑完整流水线并落盘产物")
-    p_run.add_argument("--config", default="configs/default.json", help="配置文件路径")
-    p_run.add_argument("--out", default="out", help="产物目录")
+    p_run.add_argument("--config", default="configs/default.json", help="配置文件路径；相对路径按项目根解析")
+    p_run.add_argument("--out", default="out", help="产物目录；相对路径按项目根解析")
     p_run.add_argument("--quiet", action="store_true", help="不打印逐个配置的进度")
     p_run.set_defaults(func=_cmd_run)
 
     p_cmp = sub.add_parser("compare", help="打印消融矩阵（只读）")
-    p_cmp.add_argument("--out", default="out")
+    p_cmp.add_argument("--out", default="out", help="产物目录；相对路径按项目根解析")
     p_cmp.set_defaults(func=_cmd_compare)
 
     p_front = sub.add_parser("frontier", help="打印 Pareto 前沿（只读）")
-    p_front.add_argument("--out", default="out")
+    p_front.add_argument("--out", default="out", help="产物目录；相对路径按项目根解析")
     p_front.add_argument(
         "--pair",
         default="",
@@ -497,24 +522,24 @@ def build_parser() -> argparse.ArgumentParser:
     p_front.set_defaults(func=_cmd_frontier)
 
     p_abl = sub.add_parser("ablation", help="打印单变量消融 / 空间归因 / 达额成本（只读）")
-    p_abl.add_argument("--out", default="out")
+    p_abl.add_argument("--out", default="out", help="产物目录；相对路径按项目根解析")
     p_abl.set_defaults(func=_cmd_ablation)
 
     p_sp = sub.add_parser("spaces", help="打印两个空间的取值与效果（只读）")
-    p_sp.add_argument("--out", default="out")
+    p_sp.add_argument("--out", default="out", help="产物目录；相对路径按项目根解析")
     p_sp.set_defaults(func=_cmd_spaces)
 
     p_exp = sub.add_parser("explain", help="解释某个配置的结果（只读）")
     p_exp.add_argument("spec_id")
-    p_exp.add_argument("--out", default="out")
+    p_exp.add_argument("--out", default="out", help="产物目录；相对路径按项目根解析")
     p_exp.set_defaults(func=_cmd_explain)
 
     p_list = sub.add_parser("list", help="列出全部配置（只读）")
-    p_list.add_argument("--out", default="out")
+    p_list.add_argument("--out", default="out", help="产物目录；相对路径按项目根解析")
     p_list.set_defaults(func=_cmd_list)
 
     p_dag = sub.add_parser("dag", help="打印血缘图（只读）")
-    p_dag.add_argument("--out", default="out")
+    p_dag.add_argument("--out", default="out", help="产物目录；相对路径按项目根解析")
     p_dag.add_argument("--dot", action="store_true", help="输出 Graphviz DOT")
     p_dag.add_argument(
         "--selected-only",
@@ -527,7 +552,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_q = sub.add_parser("query", help="用导出的检索组件真的跑一次查询（只读）")
     p_q.add_argument("spec_id")
     p_q.add_argument("text", nargs="+", help="查询文本（多个词会拼成一句）")
-    p_q.add_argument("--out", default="out")
+    p_q.add_argument("--out", default="out", help="产物目录；相对路径按项目根解析")
     p_q.set_defaults(func=_cmd_query)
 
     return parser
@@ -536,6 +561,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    _anchor_args(args)
     try:
         return int(args.func(args))
     except FileNotFoundError as exc:
